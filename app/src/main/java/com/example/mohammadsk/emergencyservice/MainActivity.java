@@ -16,11 +16,18 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolBar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    private int[] icons;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        icons = new int[]{
+                R.drawable.ic_hospital,
+                R.drawable.ic_fire_service,
+                R.drawable.ic_police_station
+        };
 
         // assign with xml
         toolBar = (Toolbar) findViewById(R.id.toolbar);
@@ -32,6 +39,10 @@ public class MainActivity extends AppCompatActivity {
         setDataToViewPager();
         // set view pager to tab layout
         tabLayout.setupWithViewPager(viewPager);
+        // set icon
+        tabLayout.getTabAt(0).setIcon(icons[0]);
+        tabLayout.getTabAt(1).setIcon(icons[1]);
+        tabLayout.getTabAt(2).setIcon(icons[2]);
 
     }
 
@@ -40,9 +51,9 @@ public class MainActivity extends AppCompatActivity {
         // create object of a class
         VIewPageAdapter viewPagerAdapter = new VIewPageAdapter(getSupportFragmentManager());
         // add fragment class with title
-        viewPagerAdapter.addFragment(new HospitalFragment(), "Hospital");
-        viewPagerAdapter.addFragment(new FireServiceFragment(), "Fire Service");
-        viewPagerAdapter.addFragment(new PoliceStationFragment(), "Police Station");
+        viewPagerAdapter.addFragment(new HospitalFragment());
+        viewPagerAdapter.addFragment(new FireServiceFragment());
+        viewPagerAdapter.addFragment(new PoliceStationFragment());
         // set into adapter
         viewPager.setAdapter(viewPagerAdapter);
 

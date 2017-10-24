@@ -13,7 +13,6 @@ import java.util.ArrayList;
 public class VIewPageAdapter extends FragmentPagerAdapter {
 
     private ArrayList<Fragment> fragmentList = new ArrayList<>();
-    private ArrayList<String> tabNameList = new ArrayList<>();
 
     public VIewPageAdapter(FragmentManager fm) {
         super(fm);
@@ -29,15 +28,9 @@ public class VIewPageAdapter extends FragmentPagerAdapter {
         return fragmentList.size();
     }
 
-    @Override
-    public CharSequence getPageTitle(int position) {
-        return tabNameList.get(position);
-    }
 
-    // add fragment and tab name
-    public void addFragment(Fragment fragment, String tabName){
+    public void addFragment(Fragment fragment){
         fragmentList.add(fragment);
-        tabNameList.add(tabName);
     }
 
 }
