@@ -37,7 +37,7 @@
         android:layout_weight="7"
         android:orientation="horizontal">
 
-        <ImageButton
+        <ImageView
             android:id="@+id/hospital_location_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
             android:background="#fff"
             android:src="@mipmap/location"/>
 
-        <ImageButton
+        <ImageView
             android:id="@+id/hospital_call_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
