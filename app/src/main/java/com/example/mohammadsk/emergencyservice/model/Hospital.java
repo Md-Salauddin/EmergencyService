@@ -1,18 +1,27 @@
-package com.example.mohammadsk.emergencyservice;
+package com.example.mohammadsk.emergencyservice.model;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by MohammadSk on 12-Nov-17.
  */
 
 public class Hospital {
-
+    @SerializedName("name")
     private String hospitalName;
+    @SerializedName("phoneNumber")
     private String hospitalMobileNo;
+    @SerializedName("address")
     private String hospitalAddress;
+    @SerializedName("zone")
     private String hospitalZone;
+    @SerializedName("district")
     private String hospitalDistrict;
+    @SerializedName("latitude")
     private String hospitalLatitude;
+    @SerializedName("longitude")
     private String hospitalLongitude;
+
     private int showLocationIcon;
     private int callIcon;
 

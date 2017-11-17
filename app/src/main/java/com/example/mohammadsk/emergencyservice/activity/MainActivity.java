@@ -1,4 +1,4 @@
-package com.example.mohammadsk.emergencyservice;
+package com.example.mohammadsk.emergencyservice.activity;
 
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
+import com.example.mohammadsk.emergencyservice.R;
 import com.example.mohammadsk.emergencyservice.adapter.VIewPageAdapter;
 import com.example.mohammadsk.emergencyservice.fragment.FireServiceFragment;
 import com.example.mohammadsk.emergencyservice.fragment.HospitalFragment;

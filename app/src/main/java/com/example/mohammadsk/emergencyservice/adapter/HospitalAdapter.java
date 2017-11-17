@@ -8,11 +8,13 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.mohammadsk.emergencyservice.Hospital;
+import com.example.mohammadsk.emergencyservice.model.Hospital;
 import com.example.mohammadsk.emergencyservice.R;
 
 import java.util.List;
@@ -25,6 +27,14 @@ public class HospitalAdapter extends ArrayAdapter<Hospital> {
 
     private Context mContext;
     private int mResource;
+    private int lastPosition = -1;
+
+    static class ViewHolder {
+        TextView hospital_name;
+        TextView hospital_mobile_no;
+        ImageView show_icon;
+        ImageView call_icon;
+    }
 
     public HospitalAdapter(@NonNull Context context, int resource, @NonNull List<Hospital> objects) {
         super(context, resource, objects);
@@ -49,28 +59,41 @@ public class HospitalAdapter extends ArrayAdapter<Hospital> {
 
         Hospital hospital = new Hospital(hospitalName, hospitalMobileNo, hospitalAddress, hospitalZone, hospitalDistrict, hospitalLatitude, hospitalLongitude, showLocationIcon, callIcon);
 
+        ViewHolder holder;
+        final View result;
+
         LayoutInflater inflater = LayoutInflater.from(mContext);
         convertView = inflater.inflate(R.layout.custom_hospital_list_view, parent, false);
 
-        TextView hospital_name = (TextView) convertView.findViewById(R.id.hospital_name_field);
-        TextView hospital_mobile_no = (TextView) convertView.findViewById(R.id.hospital_phoneNumber);
-        ImageView show_icon =  (ImageView) convertView.findViewById(R.id.hospital_location_button);
-        ImageView call_icon =  (ImageView) convertView.findViewById(R.id.hospital_call_button);
+        holder = new ViewHolder();
 
-        hospital_name.setText(hospitalName);
-        hospital_mobile_no.setText(hospitalMobileNo);
+        holder.hospital_name = (TextView) convertView.findViewById(R.id.hospital_name_field);
+        holder.hospital_mobile_no = (TextView) convertView.findViewById(R.id.hospital_phoneNumber);
+        holder.show_icon =  (ImageView) convertView.findViewById(R.id.hospital_location_button);
+        holder.call_icon =  (ImageView) convertView.findViewById(R.id.hospital_call_button);
 
-        show_icon.setImageResource(showLocationIcon);
-        call_icon.setImageResource(callIcon);
+        result = convertView;
+        convertView.setTag(holder);
 
-        call_icon.setOnClickListener(new View.OnClickListener() {
+        // animated the list view
+        Animation animation = AnimationUtils.loadAnimation(getContext(),
+                (position > lastPosition) ? R.anim.loading_down_anim : R.anim.loading_up_anim);
+        result.startAnimation(animation);
+        lastPosition = position;
+
+        holder.hospital_name.setText(hospital.getHospitalName());
+        holder.hospital_mobile_no.setText(hospital.getHospitalMobileNo());
+        holder.show_icon.setImageResource(hospital.getShowLocationIcon());
+        holder.call_icon.setImageResource(hospital.getCallIcon());
+
+        holder.call_icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 call(hospitalMobileNo);
             }
         });
 
-        show_icon.setOnClickListener(new View.OnClickListener() {
+        holder.show_icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showIntoMap(hospitalLatitude, hospitalLongitude);

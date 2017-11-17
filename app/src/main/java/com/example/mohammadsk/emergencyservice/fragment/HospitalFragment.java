@@ -9,12 +9,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
-import com.example.mohammadsk.emergencyservice.Hospital;
+import com.example.mohammadsk.emergencyservice.interface_api_call.ApiInterface;
+import com.example.mohammadsk.emergencyservice.model.Hospital;
 import com.example.mohammadsk.emergencyservice.R;
 import com.example.mohammadsk.emergencyservice.adapter.HospitalAdapter;
+import com.example.mohammadsk.emergencyservice.rertrofit.ApiClient;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by MohammadSk on 24-Oct-17.
@@ -23,6 +31,10 @@ import java.util.ArrayList;
 public class HospitalFragment extends Fragment {
 
     private ListView listView;
+    private ApiInterface apiInterface;
+    private List<Hospital> hospitals;
+    private ArrayList<Hospital> hospitalsData = new ArrayList<>();
+    private Hospital hospital;
 
     @Override
     public View onCreateView(LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
@@ -30,35 +42,36 @@ public class HospitalFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_hospital_layout, container, false);
         listView = (ListView) view.findViewById(R.id.hospital_list_view);
 
-        Hospital hospitalOne = new Hospital("Ad-din Medical College","+88-02-9353391-3","2 Bara Maghbazar, Dhaka-1217, Bangladesh","Mogbazar","Dhaka","23.748479","90.405737", R.mipmap.location, R.mipmap.call);
-        Hospital hospitalTwo = new Hospital("Uttara Central Hospital & Diagnostic Center","+8801711-182522","House 01, Road 07 Jashim Uddin Over Bridge, Dhaka 1230","Uttara","Dhaka","23.857718","90.402099", R.mipmap.location, R.mipmap.call);
-        Hospital hospitalThree = new Hospital("Medical College For Women and Hospita","02-8913939","Road-8/9, Sector-1, Plot-4, Uttara Model Town, Dhaka-1230, Bangladesh","Uttara","Dhaka","23.858187","90.400898", R.mipmap.location, R.mipmap.call);
-        Hospital hospitalFour = new Hospital("Hi-Care General Hospital","+8801778949055-6","House-24 & 26 , Lake Drive Road, Sector-7, Uttara Model Town -1230. Dhaka","Uttara","Dhaka","23.868940","90.393602", R.mipmap.location, R.mipmap.call);
-        Hospital hospitalFive = new Hospital("Uttara Adhunik Medical College and Hospital","+8802-8932330","Rd No. 4, Dhaka-1230, Bangladesh","Uttara","Dhaka","23.874982","90.396778", R.mipmap.location, R.mipmap.call);
+        // create interface instance object
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
 
+        Call<List<Hospital>> call = apiInterface.getHospitals();
+        call.enqueue(new Callback<List<Hospital>>() {
+            @Override
+            public void onResponse(Call<List<Hospital>> call, Response<List<Hospital>> response) {
+                hospitals = response.body();
 
-        final ArrayList<Hospital> hospitals = new ArrayList<>();
-        hospitals.add(hospitalOne);
-        hospitals.add(hospitalTwo);
-        hospitals.add(hospitalThree);
-        hospitals.add(hospitalFour);
-        hospitals.add(hospitalFive);
+                showIntoListView();
+            }
 
-        final HospitalAdapter hospitalAdapter = new HospitalAdapter(getContext(), R.layout.custom_hospital_list_view, hospitals);
-        listView.setAdapter(hospitalAdapter);
+            @Override
+            public void onFailure(Call<List<Hospital>> call, Throwable t) {
+                Toast.makeText(getContext(),"Failed to load data",Toast.LENGTH_SHORT).show();
+            }
+        });
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String hospitalName = hospitals.get(i).getHospitalName().toString();
-                String hospitalMobileNO = hospitals.get(i).getHospitalMobileNo().toString();
-                String hospitalAddress = hospitals.get(i).getHospitalAddress().toString();
-                String hospitalZone = hospitals.get(i).getHospitalZone().toString();
-                String hospitalDistrict = hospitals.get(i).getHospitalDistrict().toString();
+             @Override
+             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                 String hospitalName = hospitals.get(i).getHospitalName().toString();
+                 String hospitalMobileNO = hospitals.get(i).getHospitalMobileNo().toString();
+                 String hospitalAddress = hospitals.get(i).getHospitalAddress().toString();
+                 String hospitalZone = hospitals.get(i).getHospitalZone().toString();
+                 String hospitalDistrict = hospitals.get(i).getHospitalDistrict().toString();
 
-                Hospital hospital = new Hospital(hospitalName, hospitalMobileNO, hospitalAddress, hospitalZone, hospitalDistrict);
-                showDetails(hospital.toString());
-            }
+                 Hospital hospital = new Hospital(hospitalName, hospitalMobileNO, hospitalAddress, hospitalZone, hospitalDistrict);
+                 showDetails(hospital.toString());
+             }
         });
 
         return view;
@@ -77,5 +90,23 @@ public class HospitalFragment extends Fragment {
         });
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
+    }
+
+    public void showIntoListView() {
+
+        for (int i = 0; i < hospitals.size(); i++) {
+            String name = hospitals.get(i).getHospitalName();
+            String mobileNo = hospitals.get(i).getHospitalMobileNo();
+            String address = hospitals.get(i).getHospitalAddress();
+            String zone = hospitals.get(i).getHospitalZone();
+            String district = hospitals.get(i).getHospitalDistrict();
+            String latitude = hospitals.get(i).getHospitalLatitude();
+            String longitude = hospitals.get(i).getHospitalLongitude();
+
+            hospital = new Hospital(name, mobileNo, address, zone, district, latitude, longitude, R.mipmap.location, R.mipmap.call);
+            hospitalsData.add(hospital);
+        }
+        HospitalAdapter hospitalAdapter = new HospitalAdapter(getContext(), R.layout.custom_hospital_list_view, hospitalsData);
+        listView.setAdapter(hospitalAdapter);
     }
 }
