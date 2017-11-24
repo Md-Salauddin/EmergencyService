@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
+    // set fragment
     private void setDataToViewPager() {
         // create object of a class
         VIewPageAdapter viewPagerAdapter = new VIewPageAdapter(getSupportFragmentManager());
@@ -57,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
         viewPagerAdapter.addFragment(new PoliceStationFragment());
         // set into adapter
         viewPager.setAdapter(viewPagerAdapter);
-
     }
 
 }

@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.example.mohammadsk.emergencyservice.model.Hospital;
 import com.example.mohammadsk.emergencyservice.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,6 +30,9 @@ public class HospitalAdapter extends ArrayAdapter<Hospital> {
     private int mResource;
     private int lastPosition = -1;
 
+    private List<Hospital> mObjects = null;
+    private ArrayList<Hospital> arrayList = new ArrayList<>();
+
     static class ViewHolder {
         TextView hospital_name;
         TextView hospital_mobile_no;
@@ -40,6 +44,9 @@ public class HospitalAdapter extends ArrayAdapter<Hospital> {
         super(context, resource, objects);
         mContext = context;
         mResource = resource;
+        mObjects = objects;
+
+        arrayList.addAll(objects);
     }
 
     @NonNull
@@ -103,17 +110,39 @@ public class HospitalAdapter extends ArrayAdapter<Hospital> {
         return convertView;
     }
 
+    // make a call
     public void call(String phoneNumber){
         Intent intent = new Intent(Intent.ACTION_DIAL);
         intent.setData(Uri.parse("tel:"+phoneNumber));
         mContext.startActivity(intent);
     }
 
+    // show into google map
     public void showIntoMap(String latitude, String longitude){
         Intent intent, selector;
         intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:<"+latitude +">,<"+longitude+">?q=<"+latitude +">,<"+longitude+">"));
         selector = Intent.createChooser(intent, "Select Map Launcher"); // it will create a option if don't have google map
         mContext.startActivity(selector);
+    }
+
+    // Filter Class
+    public void filter(String searchZone) {
+        String sZone = searchZone.toLowerCase();
+        List<Hospital> newList = new ArrayList<>();
+        mObjects.clear();
+
+        if (sZone.length() == 0) {
+            mObjects.addAll(arrayList);
+        } else {
+            for (Hospital searchHospital : arrayList) {
+                String hZone = searchHospital.getHospitalZone().toLowerCase();
+                if (hZone.contains(sZone)){
+                    newList.add(searchHospital);
+                }
+            }
+            mObjects.addAll(newList);
+        }
+        notifyDataSetChanged();
     }
 
 }

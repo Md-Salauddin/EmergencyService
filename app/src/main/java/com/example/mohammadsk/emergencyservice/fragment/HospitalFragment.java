@@ -2,13 +2,19 @@ package com.example.mohammadsk.emergencyservice.fragment;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.example.mohammadsk.emergencyservice.interface_api_call.ApiInterface;
@@ -32,9 +38,16 @@ public class HospitalFragment extends Fragment {
 
     private ListView listView;
     private ApiInterface apiInterface;
-    private List<Hospital> hospitals;
+    private List<Hospital> hospitals = new ArrayList<>();
     private ArrayList<Hospital> hospitalsData = new ArrayList<>();
     private Hospital hospital;
+    private HospitalAdapter hospitalAdapter;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
@@ -51,7 +64,10 @@ public class HospitalFragment extends Fragment {
             public void onResponse(Call<List<Hospital>> call, Response<List<Hospital>> response) {
                 hospitals = response.body();
 
-                showIntoListView();
+                if (response.isSuccessful())
+                    showIntoListView();
+                else
+                    Toast.makeText(getContext(),"Failed to load data",Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -60,6 +76,7 @@ public class HospitalFragment extends Fragment {
             }
         });
 
+        // set onclick listener when a list view being pressed
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
              @Override
              public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -77,6 +94,31 @@ public class HospitalFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.search_menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.search_bar);
+
+        SearchView searchView = new SearchView(getContext());
+        MenuItemCompat.setActionView(searchItem, searchView);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                hospitalAdapter.filter(s);
+                return true;
+            }
+        });
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    // method : show hospital details
     public void showDetails(String message){
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
         alertDialogBuilder.setTitle("Hospital Details");
@@ -92,6 +134,7 @@ public class HospitalFragment extends Fragment {
         alertDialog.show();
     }
 
+    // show into list view
     public void showIntoListView() {
 
         for (int i = 0; i < hospitals.size(); i++) {
@@ -106,7 +149,8 @@ public class HospitalFragment extends Fragment {
             hospital = new Hospital(name, mobileNo, address, zone, district, latitude, longitude, R.mipmap.location, R.mipmap.call);
             hospitalsData.add(hospital);
         }
-        HospitalAdapter hospitalAdapter = new HospitalAdapter(getContext(), R.layout.custom_hospital_list_view, hospitalsData);
+        hospitalAdapter = new HospitalAdapter(getContext(), R.layout.custom_hospital_list_view, hospitalsData);
         listView.setAdapter(hospitalAdapter);
     }
+
 }

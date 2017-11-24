@@ -45,6 +45,7 @@ public class Hospital {
         this.hospitalDistrict = hospitalDistrict;
     }
 
+
     public String getHospitalName() {
         return hospitalName;
     }
